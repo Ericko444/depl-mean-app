@@ -1,0 +1,38 @@
+{
+  "name": "projet-mean-m1",
+  "version": "1.0.0",
+  "description": "Projet MEAN M1 Ericko - Henika",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app"
+  },
+  "dependencies": {
+    "accesscontrol": "^2.2.1",
+    "bcryptjs": "2.4.3",
+    "body-parser": "1.18.2",
+    "cors": "2.8.4",
+    "dotenv": "^16.0.3",
+    "express": "4.16.2",
+    "express-jwt": "^8.3.0",
+    "jsonwebtoken": "8.1.0",
+    "jwt-decode": "^3.1.2",
+    "moment": "^2.29.4",
+    "mongoose": "^6.0.0",
+    "passport": "0.4.0",
+    "passport-jwt": "3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/manarivoericko4/projet-mean-m1.git"
+  },
+  "author": "Ericko - Henika",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/manarivoericko4/projet-mean-m1/issues"
+  },
+  "homepage": "https://gitlab.com/manarivoericko4/projet-mean-m1#readme",
+  "devDependencies": {
+    "ws": "3.3.2"
+  }
+}
