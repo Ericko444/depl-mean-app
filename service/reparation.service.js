@@ -8,6 +8,14 @@ exports.getReparations = (callback) => {
   Reparation.find({ etat : {$gte : 0}}, callback);
 };
 
+exports.getReparationsTermines = (callback) => {
+  Reparation.find({ etat : {$eq : 2}}, callback);
+};
+
+exports.getNouveau = (callback) => {
+  Reparation.find({ etat : {$eq : 0}}, callback);
+};
+
 exports.depot = (reparation, res) => {
   reparation.save((err, rep) => {
     if (!!err) {
@@ -120,6 +128,53 @@ exports.modifierEtat = (obj, res, next) => {
             responsable: data.respSelected,
             operations: data.selectedOperations,
             dateFin: now,
+          }
+        ).then((savedDoc) => {
+          var ob = {type: "success", message: "Modifié"};
+          next(ob);
+        });
+      }
+    }
+  });
+};
+
+exports.modifierEtatOnly = (obj, res, next) => {
+  const data = obj.body;
+  const now = Date.now();;
+
+  this.findById(data.id, (err, reparation) => {
+    if (err) {
+      next(err);
+    } else {
+      if (data.statusSelected == '1') {
+        Reparation.findOneAndUpdate(
+          { _id: data.id },
+          { 
+            etat: data.statusSelected,
+            dateDebut: now,
+          }
+        ).then((savedDoc) => {
+          var ob = {type: "success", message: "Modifié"};
+          next(ob);
+        });
+      } else if (data.statusSelected == '2'){
+        Reparation.findOneAndUpdate(
+          { _id: data.id },
+          { 
+            etat: data.statusSelected,
+            dateFin: now,
+          }
+        ).then((savedDoc) => {
+          var ob = {type: "success", message: "Modifié"};
+          next(ob);
+        });
+      } else if (data.statusSelected == '0'){
+        Reparation.findOneAndUpdate(
+          { _id: data.id },
+          { 
+            etat: data.statusSelected,
+            dateDebut: null,
+            dateFin: null,
           }
         ).then((savedDoc) => {
           var ob = {type: "success", message: "Modifié"};

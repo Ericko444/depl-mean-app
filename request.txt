@@ -1,0 +1,306 @@
+db.voitures.aggregate(
+  {$unwind: "$reparations"},
+  {$lookup: {
+    from:"reparations",
+    localField: "reparations",
+    foreignField: "_id",
+    as: "reparation"
+
+   }},
+   {$match: {
+    "reparation.dateDepot": {"$gte": new Date("2023-01-22T11:54:14.243+00:00")}
+   }}
+)
+
+db.voitures.aggregate(
+  {$match: {"proprietaire" : {"$eq": "63cdf9771674e1ad7cf57af4"},}},
+  {$lookup: {
+    from:"reparations",
+    localField: "reparations",
+    foreignField: "_id",
+    as: "reparation"
+
+   }},
+   {$unwind: "$reparation"},
+   {
+    $addFields: {
+      '$authorObjectId': {$toObjectId: "$reparation.operations"}  
+    }
+  },
+   {$lookup: {
+    from:"prestations",
+    localField: "reparation.operations",
+    foreignField: "_id",
+    as: "operation"
+   }},
+);
+
+db.messages.aggregate([
+  {
+    $addFields: {
+      '$authorObjectId': {$toObjectId: $authorId}  
+    }
+  },
+  {
+    $lookup: {
+      from: 'authors',
+      localField: '$authorObjectId',
+      foreignField: '_id',
+      as: 'author'
+    }
+  }
+ ])
+
+db.prestations.find({});
+
+db.voitures.aggregate(
+  {$match: {"proprietaire" : {"$eq": "63cdf9771674e1ad7cf57af4"},}},
+  {$lookup: {
+    from:"reparations",
+    localField: "reparations",
+    foreignField: "_id",
+    as: "reparation"
+
+   }},
+   {$unwind: "$reparation"},
+   {$lookup: {
+    from:"operation",
+    localField: "reparation.operations",
+    foreignField: "_id",
+    as: "operation"
+   }},
+   {$match: {
+      "reparation.dateDepot": {"$exists": true},
+      "reparation.bonSortie": {"$eq": ""},
+   }}
+);
+
+
+db.voitures.aggregate(
+  {$match: {"proprietaire" : {"$eq": "63cdf9771674e1ad7cf57af4"},"_id": {"$eq": ObjectId("63cdf98d1674e1ad7cf57af9")}}},
+  {$lookup: {
+    from:"reparations",
+    localField: "reparations",
+    foreignField: "_id",
+    as: "reparation"
+   }}
+)
+
+db.createView( "reparationsEnCours", "voitures", [
+    {
+        $unwind: "$reparations",
+    },
+   {
+      $lookup:
+         {
+            from: "reparations",
+            localField: "reparations",
+            foreignField: "_id",
+            as: "reparation",
+         }
+   },
+    {
+        $match: {
+            "reparation.dateDepot": {"$exists": true},
+            "reparation.bonSortie": {"$eq": ""},
+        }
+   },
+   {
+      $project:
+         {
+           _id: 0,
+           voiture: "$voitures._id",
+           reparationId: "$reparation._id",
+           proprietaire: 1,
+           dateDepot: "$reparation.dateDepot",
+           dateRetrait: "$reparation.dateRetrait",
+           dateDebut: "$reparation.dateDebut",
+           dateFin: "$reparation.dateFin",
+           description: "$reparation.description",
+           avancement: "$reparation.avancement",
+           coutTotal: "$reparation.coutTotal",
+           operations: "$reparation.operations",
+           paiement: "$reparation.paiement",
+           bonSortie: "$reparation.bonSortie",
+         }
+   },
+   {$unwind: "$reparationId"},
+   {$unwind: "$dateDepot"},
+   {$unwind: "$description"},
+] );
+
+db.createView( "testview", "voitures", [
+    {
+        $unwind: "$reparations",
+    },
+   {
+      $lookup:
+         {
+            from: "reparations",
+            localField: "reparations",
+            foreignField: "_id",
+            as: "reparation",
+         }
+   },
+   {
+        $match: {
+            "reparation.dateDepot": {"$exists": true},
+            "reparation.bonSortie": {"$ne": ""},
+        }
+   },
+] );
+
+db.createView( "reparationsEnCours", "voitures", [
+    {
+        $unwind: "$reparations",
+    },
+   {
+      $lookup:
+         {
+            from: "reparations",
+            localField: "reparations",
+            foreignField: "_id",
+            as: "reparation",
+         }
+   },
+    {
+        $match: {
+            "reparation.dateDepot": {"$exists": true},
+            "reparation.bonSortie": {"$eq": ""},
+        }
+   },
+] );
+
+db.createView( "reparationsEnCours", "voitures", [
+  {$lookup: {
+    from:"reparations",
+    localField: "reparations",
+    foreignField: "_id",
+    as: "reparation"
+   }},
+   {$match: {
+    "reparation.dateDepot": {"$exists": true},
+    "reparation.bonSortie": {"$eq": ""},
+   }},
+   {$unwind: "$reparation"},
+   {$lookup: {
+    from:"operation",
+    localField: "reparation.operations",
+    foreignField: "_id",
+    as: "operation"
+   }},
+] );
+
+db.createView( "listeReparations", "voitures", [
+  {$lookup: {
+    from:"reparations",
+    localField: "reparations",
+    foreignField: "_id",
+    as: "reparation"
+   }},
+   {$unwind: "$reparation"},
+   {$lookup: {
+    from:"prestations",
+    localField: "reparation.operations",
+    foreignField: "_id",
+    as: "operation"
+   }},
+] );
+
+db.voitures.aggregate(
+  {$match: {"proprietaire" : {"$eq": "63cdf9771674e1ad7cf57af4"},}},
+  {$lookup: {
+    from:"reparations",
+    localField: "reparations",
+    foreignField: "_id",
+    as: "reparation"
+
+   }},
+   {$unwind: "$reparation"},
+   {$lookup: {
+    from:"operation",
+    localField: "reparation.operations",
+    foreignField: "_id",
+    as: "operation"
+   }},
+   {$match: {
+      "reparation.dateDepot": {"$exists": true},
+      "reparation.bonSortie": {"$eq": ""},
+   }}
+);
+
+db.reparationsEnCours.find({proprietaire: "63cdf9771674e1ad7cf57af4"});
+
+db.reparations.distinct( "voiture", { "voiture.proprietaire": "63d62b9f5272d58dc6608f21" } );
+
+
+db.operations.insert( { intitule: "", qty: 15 } )
+
+db.operations.insert(
+   [
+     {intitule: "Plaquettes de frein", image: "", cout: 45000, pieces: [{"intitule": "Plaquettes de frein", "nombre": 4}], etat : 0, courante: true },
+     {intitule: "Vidange", image: "", cout: 30000, pieces: [{"intitule": "Huile de vidange", "nombre": 1}], etat : 0, courante: true },
+     {intitule: "Courroie de distribution", image: "", cout: 45000, pieces: [{"intitule": "Courroie", "nombre": 1}, {"intitule": "Huile", "nombre": 2}], etat : 0, courante: true },
+     {intitule: "Parallélisme", image: "", cout: 20000, pieces: [], etat : 0, courante: false },
+     {intitule: "Tarage injecteur", image: "", cout: 50000, pieces: [{"intitule": "Tar", "nombre": 1}], etat : 0, courante: false },
+   ]
+)
+
+db.reparations.find({ 'voiture._id': '63d6418211d2be5158281486' });
+
+db.reparations.aggregate(
+  [
+    {
+      $group: {
+        "voiture._id": "63d7abdd613f0f0bf5f806d1",
+        tempsMoyen: {
+          $avg: {
+            $dateDiff: {
+              startDate: "$dateDebut",
+              endDate: "$dateFin",
+              unit: "hour"
+            }
+          }
+        }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        tM: {
+          $trunc: 
+          ["tempsMoyen", 1]
+        }
+      }
+    }
+  ]
+)
+
+db.reparations.aggregate(
+  [
+    {
+      $group: {
+        _id: null,
+        tempsMoyen: {
+          $avg: {
+            $dateDiff: {
+              startDate: "$dateDebut",
+              endDate: "$dateFin",
+              unit: "hour"
+            }
+          }
+        }
+      }
+    },
+  ]
+)
+
+db.reparations.aggregate(
+  [
+    {
+      $group: {
+        "voiture._id": "63d7ab498f11781e3d8e9f09",
+      }
+    },
+  ]
+)

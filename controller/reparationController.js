@@ -3,6 +3,7 @@ const reparationService = require("../service/reparation.service");
 const voitureService = require("../service/voiture.service");
 const operationService = require("../service/operation.service");
 const paiementService = require("../service/paiement.service");
+const statistiqueService = require("../service/statistique.service");
 // exports.ajouterVoiture = function(req, res, next){
 //     let newCar = new Voiture({
 //         marque: req.body.marque,
@@ -197,6 +198,10 @@ exports.getOperations = (req, res, next) => {
   });
 };
 
+exports.getTempsMoyenne = (req, res, next) => {
+  statistiqueService.tempsMoyenReparation(req.params.id);
+}
+
 // exports.testView = (req, res, next) => {
 //     reparationService.testView(req.user.data._id, (err, data) => {
 //         if(err){
@@ -236,4 +241,44 @@ exports.getReparations = (req, res, next) => {
 
   exports.modifierEtat = (obj, res, next) => {
     reparationService.modifierEtat(obj, res, next);
+  };
+
+  exports.modifierEtatOnly = (obj, res, next) => {
+    reparationService.modifierEtatOnly(obj, res, next);
+  };
+
+  exports.getTermines = (req, res, next) => {
+    reparationService.getReparationsTermines((err, data) => {
+      if (err) {
+        res.json({
+          success: false,
+          err: `Fetch error: ${err}`,
+        });
+        throw new Error(err);
+      } else {
+        res.json({
+          success: true,
+          msg: "Liste des reparationss",
+          data: data,
+        });
+      }
+    });
+  };
+
+  exports.getNouveau = (req, res, next) => {
+    reparationService.getNouveau((err, data) => {
+      if (err) {
+        res.json({
+          success: false,
+          err: `Fetch error: ${err}`,
+        });
+        throw new Error(err);
+      } else {
+        res.json({
+          success: true,
+          msg: "Liste des reparationss",
+          data: data,
+        });
+      }
+    });
   };

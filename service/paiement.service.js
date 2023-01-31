@@ -26,17 +26,26 @@ exports.ajouterPaiement = (data, res, next) => {
           rep.paiement = p;
         }
         console.log(rep.paiement);
-        Reparation.findOneAndUpdate(
-          { _id: repId },
-          { paiement: rep.paiement }
-        ).then((saved) => {
-          var err = {
-            type: "success",
-            message: "Paiement enregistré",
-            success: "true",
-          };
+        if (
+          this.totalFacture(rep) - this.totalPaiement(rep) !==
+          0
+        ){
+          var err = { type: "error", msg: "Erreur montant facture dépassé", success: "false" };
           next(err);
-        });
+        }
+        else{
+          Reparation.findOneAndUpdate(
+            { _id: repId },
+            { paiement: rep.paiement }
+          ).then((saved) => {
+            var err = {
+              type: "success",
+              message: "Paiement enregistré",
+              success: "true",
+            };
+            next(err);
+          });
+        }
         // rep.save().then((data) => {
         //   next("Paiement effectué");
         // });
