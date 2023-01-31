@@ -53,7 +53,7 @@ app.use((error, req, res, next) => {
   else if(error.type === "success")
     res.status(200).send(error);
   else if(error.type === "error")
-    res.status(400).send(error);
+    res.json({ success: false, msg: error.msg });
   else res.status(500).send(error);
 });
 
